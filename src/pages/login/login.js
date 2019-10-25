@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import firebase from '@firebase/app'
 import 'firebase/auth'
 
@@ -27,7 +27,7 @@ function Login () {
     })
   }, [])
 
-  async function login () {
+  const login = useCallback(async () => {
     const provider = new firebase.auth.GoogleAuthProvider()
     try {
       const result = await firebase.auth().signInWithRedirect(provider)
@@ -35,16 +35,15 @@ function Login () {
     } catch (error) {
       console.log(error)
     }
-  }
+  }, [])
 
-  async function logout () {
-    firebase.auth().signOut().then(() => {
-      setUserInfo({
-        user: null,
-        isLogged: false
-      })
+  const logout = useCallback(async () => {
+    await firebase.auth().signOut()
+    setUserInfo({
+      user: null,
+      isLogged: false
     })
-  }
+  }, [])
 
   return (
     <div>
