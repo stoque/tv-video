@@ -3,5 +3,11 @@
   "extends": ["standard", "standard-react"],
   "env": {
     "jest": true
+  },
+  "rules": {
+    "max-len": [
+      "error",
+      { "code": 80 }
+    ]
   }
 }
