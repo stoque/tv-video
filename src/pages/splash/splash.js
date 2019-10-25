@@ -1,19 +1,32 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useCallback } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import styles from './splash.module.scss'
 
 function Splash () {
+  const isLogged = false
   const history = useHistory()
 
+  const getNextRoute = useCallback(() => {
+    if (!isLogged) {
+      return '/login'
+    } else {
+      return '/switch-user'
+    }
+  }, [isLogged])
+
   useEffect(() => {
+    const timeToRedirect = 2000
     setInterval(() => {
-      history.push('/login')
-    }, 30000)
-  }, [history])
+      const nextRoute = getNextRoute()
+      history.push(nextRoute)
+    }, timeToRedirect)
+  }, [history, getNextRoute])
 
   return (
-    <h1 className={styles.splash}>Splash</h1>
+    <div className={styles.wrapper}>
+      <h1 className={styles.splash}>Watch TV</h1>
+    </div>
   )
 }
 
