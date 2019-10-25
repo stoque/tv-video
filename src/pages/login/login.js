@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react'
-import firebase from 'firebase/app'
+import React, { useEffect, useState } from 'react'
+import firebase from '@firebase/app'
+import 'firebase/auth'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAeIBXY73Rvo5rM1axqXIE35H4sg3YTv1U',
@@ -15,22 +16,50 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig)
 
 function Login () {
+  const [userInfo, setUserInfo] = useState({
+    user: null,
+    isLogged: false
+  })
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) setUserInfo({ user, isLogged: true })
+    })
+  }, [])
+
   async function login () {
     const provider = new firebase.auth.GoogleAuthProvider()
     try {
-      const result = await firebase.auth.signInWithPopup(provider)
+      const result = await firebase.auth().signInWithRedirect(provider)
       console.log(result)
     } catch (error) {
       console.log(error)
     }
   }
 
-  useEffect(() => {
-    login()
-  }, [])
+  async function logout () {
+    firebase.auth().signOut().then(() => {
+      setUserInfo({
+        user: null,
+        isLogged: false
+      })
+    })
+  }
 
   return (
-    <h1>Login</h1>
+    <div>
+      {userInfo.isLogged && (
+        <h1>{userInfo.user.providerData[0].displayName}</h1>
+      )}
+
+      {!userInfo.isLogged && (
+        <button onClick={login}>Entrar com Google</button>
+      )}
+
+      {userInfo.isLogged && (
+        <button onClick={logout}>Sair</button>
+      )}
+    </div>
   )
 }
 
